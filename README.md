@@ -1,4 +1,4 @@
-# Eksam – Pet Boarding Facility Management System
+# Eksam (8h) – Pet Boarding Facility Management System
 
 A comprehensive ASP.NET Core web application for managing a pet boarding facility. The system handles pet registrations, kennel assignments, medication schedules, feeding restrictions, and photo updates for pet owners.
 
