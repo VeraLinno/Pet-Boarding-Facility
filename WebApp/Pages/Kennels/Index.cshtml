@@ -1,0 +1,63 @@
+@page
+@model Eksam.Pages_Kennels.IndexModel
+
+@{
+    ViewData["Title"] = "Kennel Management";
+}
+
+<h1>Kennel Management</h1>
+
+<p>
+    <a asp-page="Assign">Assign Pet to Kennel</a>
+</p>
+
+<div class="row">
+    @foreach (var item in Model.Kennel)
+    {
+        <div class="col-md-3 mb-3">
+            <div class="card @(item.Status == Domain.Enums.KennelStatus.Available ? "border-success" : item.Status == Domain.Enums.KennelStatus.Occupied ? "border-danger" : "border-warning")">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">@item.Name</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Zone:</strong> @item.Zone<br>
+                        <strong>Size:</strong> @item.Size<br>
+                        <strong>Status:</strong> 
+                        @if (item.Status == Domain.Enums.KennelStatus.Available)
+                        {
+                            <span class="badge bg-success">Available</span>
+                            <form method="post" asp-page-handler="StartCleaning" asp-route-id="@item.Id" class="mt-2">
+                                <button type="submit" class="btn btn-sm btn-warning">Start Cleaning</button>
+                            </form>
+                        }
+                        else if (item.Status == Domain.Enums.KennelStatus.Occupied)
+                        {
+                            <span class="badge bg-danger">Occupied</span>
+                        }
+                        else if (item.Status == Domain.Enums.KennelStatus.Cleaning)
+                        {
+                            <span class="badge bg-warning">Cleaning</span>
+                            if (item.CleaningUntilUtc.HasValue)
+                            {
+                                <br><small>Available: @item.CleaningUntilUtc.Value.ToLocalTime().ToString("HH:mm")</small>
+                            }
+                            <form method="post" asp-page-handler="CompleteCleaning" asp-route-id="@item.Id" class="mt-2">
+                                <button type="submit" class="btn btn-sm btn-success">Complete Cleaning</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@item.Status</span>
+                        }
+                        <br>
+                        @if (item.CurrentPet != null)
+                        {
+                            <strong>Pet:</strong> @item.CurrentPet.Name @item.CurrentPet.Species
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

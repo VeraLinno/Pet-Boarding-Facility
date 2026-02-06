@@ -1,0 +1,209 @@
+@page "/Dashboard"
+@model Eksam.Pages.DashboardModel
+@using Domain.Enums
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+    <h1 class="mb-4">Pet Boarding Facility Dashboard</h1>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <h5 class="mt-3">Pets Boarding</h5>
+                <h2 class="text-primary">@Model.PetsBoarding.Count</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <h5 class="mt-3">Medications Due Today</h5>
+                <h2 class="text-warning">@Model.MedicationsDueToday.Count</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <h5 class="mt-3">Available Kennels</h5>
+                <h2 class="text-success">@Model.AvailableKennels</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <h5 class="mt-3">Occupied Kennels</h5>
+                <h2 class="text-danger">@Model.OccupiedKennels</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medications Due Today -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            Medications Due Today
+        </div>
+        <div class="card-body">
+            @if (!Model.MedicationsDueToday.Any())
+            {
+                <p class="text-muted">No medications scheduled for today.</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Pet</th>
+                            <th>Medication</th>
+                            <th>Special Conditions</th>
+                            <th>Required</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var medication in Model.MedicationsDueToday)
+                        {
+                            <tr>
+                                <td>@medication.Time.ToString(@"hh\:mm")</td>
+                                <td>@medication.Pet?.Name</td>
+                                <td>@medication.Name</td>
+                                <td>@medication.SpecialCondition</td>
+                                <td>
+                                    @if (medication.Required)
+                                    {
+                                        <span class="badge bg-danger">Required</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Optional</span>
+                                    }
+                                </td>
+                                <td>
+                                    <form method="post" asp-page="Dashboard" asp-page-handler="MarkMedicationGiven" asp-route-medicationId="@medication.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                                onclick="this.disabled=true; this.innerText='✓ Given';">
+                                            Given
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Pets Boarding -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            Pets Currently Boarding
+        </div>
+        <div class="card-body">
+            @if (!Model.PetsBoarding.Any())
+            {
+                <p class="text-muted">No pets currently boarding.</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Kennel</th>
+                            <th>Owner</th>
+                            <th>Medications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pet in Model.PetsBoarding)
+                        {
+                            <tr>
+                                <td>@pet.Name</td>
+                                <td>@pet.Species</td>
+                                <td>@pet.Kennel?.Name</td>
+                                <td>@pet.Owner?.Name</td>
+                                <td>
+                                    @if (pet.Medications.Any())
+                                    {
+                                        <span class="badge bg-warning">@pet.Medications.Count</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">None</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Today's Photos -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            Today's Photos
+        </div>
+        <div class="card-body">
+            @if (!Model.PetsPhotoStatus.Any())
+            {
+                <p class="text-muted">No pets boarding today.</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pet</th>
+                            <th>Kennel</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var status in Model.PetsPhotoStatus)
+                        {
+                            <tr>
+                                <td>@status.Pet.Name</td>
+                                <td>@status.Pet.Kennel?.Name</td>
+                                <td>
+                                    @if (status.NeedsPhoto)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Sent @status.PhotosSentToday / @status.PhotosRequiredToday
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            Sent @status.PhotosSentToday / @status.PhotosRequiredToday
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (status.NeedsPhoto)
+                                    {
+                                        <form method="post" asp-page="Dashboard" asp-page-handler="MarkPhotoSent" asp-route-petId="@status.Pet.Id">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                Photo Sent (@(status.PhotosSentToday + 1) / @status.PhotosRequiredToday)
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">✓ Completed</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

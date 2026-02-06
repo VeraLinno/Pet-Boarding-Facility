@@ -1,0 +1,67 @@
+@page
+@model Eksam.Pages_Incompatibility.IndexModel
+
+@{
+    ViewData["Title"] = "Incompatibility Rules";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Incompatibility Rules</h1>
+        <a asp-page="./Create" class="btn btn-primary">Add New Rule</a>
+    </div>
+
+    <form asp-page="./Index" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="searchTerm" class="form-control" placeholder="Search by pet name..." value="@Model.CurrentFilter">
+            <button type="submit" class="btn btn-primary">Search</button>
+            @if (!string.IsNullOrEmpty(Model.CurrentFilter))
+            {
+                <a asp-page="./Index" class="btn btn-secondary">Clear</a>
+            }
+        </div>
+    </form>
+
+    @if (Model.IncompatibilitiesByPet == null || !Model.IncompatibilitiesByPet.Any())
+    {
+        <div class="alert alert-info">
+            No incompatibility rules have been added yet. Click "Add New Rule" to add one.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var petGroup in Model.IncompatibilitiesByPet)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">@petGroup.Pet.Name (@petGroup.Pet.Species)</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!petGroup.Incompatibilities.Any())
+                            {
+                                <p class="text-muted">No incompatibilities.</p>
+                            }
+                            else
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var incompatibility in petGroup.Incompatibilities)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>Cannot be with:</strong> @incompatibility.OtherPet?.Name<br>
+                                                <small class="text-muted">@incompatibility.RuleDescription</small>
+                                            </div>
+                                            <a asp-page="./Delete" asp-route-id="@incompatibility.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,40 @@
+@page
+@model Eksam.Pages_Incompatibility.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Incompatibility Rule";
+}
+
+<div class="container">
+    <h1 class="mb-4">Delete Incompatibility Rule</h1>
+
+    <div class="alert alert-warning">
+        <strong>Warning!</strong> Are you sure you want to delete this incompatibility rule?
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Rule Details</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Pet A</dt>
+                <dd class="col-sm-9">@Model.Incompatibility?.PetA?.Name</dd>
+
+                <dt class="col-sm-3">Pet B</dt>
+                <dd class="col-sm-9">@Model.Incompatibility?.PetB?.Name</dd>
+
+                <dt class="col-sm-3">Rule Description</dt>
+                <dd class="col-sm-9">@Model.Incompatibility?.RuleDescription</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form method="post">
+            <input type="hidden" asp-for="Incompatibility.Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

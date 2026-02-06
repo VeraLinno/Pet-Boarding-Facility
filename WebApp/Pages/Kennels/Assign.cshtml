@@ -1,0 +1,103 @@
+@page "/Kennels/Assign"
+@model Eksam.Pages_Kennels.AssignModel
+
+@{
+    ViewData["Title"] = "Assign Pet to Kennel";
+}
+
+<div class="container">
+    <h1 class="mb-4">Assign Pet to Kennel</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Select Pet</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="SelectedPetId" class="control-label"></label>
+                            <select asp-for="SelectedPetId" class="form-control" asp-items="Model.AvailablePets">
+                                <option value="">-- Select a Pet --</option>
+                            </select>
+                            <span asp-validation-for="SelectedPetId" class="text-danger"></span>
+                        </div>
+                        
+                        @if (Model.SelectedPet != null)
+                        {
+                            <div class="mt-3 p-3 bg-light rounded">
+                                <h6>Pet Details:</h6>
+                                <p><strong>Name:</strong> @Model.SelectedPet.Name</p>
+                                <p><strong>Species:</strong> @Model.SelectedPet.Species</p>
+                                <p><strong>Size:</strong> @Model.SelectedPet.Size</p>
+                                <p><strong>Aggressive:</strong> @(Model.SelectedPet.Aggressive ? "Yes" : "No")</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Select Kennel</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.SelectedPet == null)
+                        {
+                            <p class="text-muted">Please select a pet first to see available kennels.</p>
+                        }
+                        else if (!Model.AvailableKennels.Any())
+                        {
+                            <div class="alert alert-warning">
+                                No available kennels match this pet's requirements (size, zone for aggressive dogs, etc.).
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label asp-for="SelectedKennelId" class="control-label"></label>
+                                <select asp-for="SelectedKennelId" class="form-control" asp-items="Model.AvailableKennels">
+                                    <option value="">-- Select a Kennel --</option>
+                                </select>
+                                <span asp-validation-for="SelectedKennelId" class="text-danger"></span>
+                            </div>
+
+                            @if (Model.SelectedKennel != null)
+                            {
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <h6>Kennel Details:</h6>
+                                    <p><strong>Name:</strong> @Model.SelectedKennel.Name</p>
+                                    <p><strong>Size:</strong> @Model.SelectedKennel.Size</p>
+                                    <p><strong>Zone:</strong> @Model.SelectedKennel.Zone</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary" @(Model.SelectedPet == null || !Model.AvailableKennels.Any() ? "disabled" : "")>
+                Assign Pet to Kennel
+            </button>
+            <a asp-page="/Kennels/Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('SelectedPetId').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
+}

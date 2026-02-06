@@ -1,0 +1,54 @@
+@page
+@model Eksam.Pages_Incompatibility.CreateModel
+
+@{
+    ViewData["Title"] = "Add Incompatibility Rule";
+}
+
+<div class="container">
+    <h1 class="mb-4">Add Incompatibility Rule</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Incompatibility.PetAId" class="form-label">Pet A</label>
+                    <select asp-for="Incompatibility.PetAId" class="form-select" asp-items="Model.PetASelectList">
+                        <option value="">-- Select First Pet --</option>
+                    </select>
+                    <span asp-validation-for="Incompatibility.PetAId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Incompatibility.PetBId" class="form-label">Pet B (Cannot be with Pet A)</label>
+                    <select asp-for="Incompatibility.PetBId" class="form-select" asp-items="Model.PetBSelectList">
+                        <option value="">-- Select Second Pet --</option>
+                    </select>
+                    <span asp-validation-for="Incompatibility.PetBId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Incompatibility.RuleDescription" class="form-label">Rule Description</label>
+                    <input asp-for="Incompatibility.RuleDescription" class="form-control" placeholder="e.g., Cannot be in adjacent kennels" />
+                    <span asp-validation-for="Incompatibility.RuleDescription" class="text-danger"></span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger">@Model.ErrorMessage</div>
+                }
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Save Rule</button>
+                    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,86 @@
+@page
+@model Eksam.Pages_Medications.IndexModel
+
+@{
+    ViewData["Title"] = "Medication Schedule";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Medication Schedule</h1>
+        <a asp-page="./Create" class="btn btn-primary">Add Medication</a>
+    </div>
+
+    <form asp-page="./Index" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="CurrentFilter" class="form-control" placeholder="Search by pet name..." value="@Model.CurrentFilter">
+            <button type="submit" class="btn btn-primary">Search</button>
+            @if (!string.IsNullOrEmpty(Model.CurrentFilter))
+            {
+                <a asp-page="./Index" class="btn btn-secondary">Clear</a>
+            }
+        </div>
+    </form>
+
+    @if (Model.MedicationsByPet == null || !Model.MedicationsByPet.Any())
+    {
+        <div class="alert alert-info">
+            No medications have been added yet. Click "Add Medication" to add one.
+        </div>
+    }
+    else
+    {
+        @foreach (var petGroup in Model.MedicationsByPet)
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">@petGroup.Pet.Name (@petGroup.Pet.Species)</h5>
+                </div>
+                <div class="card-body">
+                    @if (!petGroup.Medications.Any())
+                    {
+                        <p class="text-muted">No medications scheduled.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Time</th>
+                                    <th>Special Conditions</th>
+                                    <th>Required</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var medication in petGroup.Medications)
+                                {
+                                    <tr>
+                                        <td>@medication.Name</td>
+                                        <td>@medication.Time.ToString(@"hh\:mm")</td>
+                                        <td>@medication.SpecialCondition</td>
+                                        <td>
+                                            @if (medication.Required)
+                                            {
+                                                <span class="badge bg-danger">Required</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Optional</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-page="./Edit" asp-route-id="@medication.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a asp-page="./Delete" asp-route-id="@medication.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

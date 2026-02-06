@@ -1,0 +1,60 @@
+@page "{id:guid}"
+@model Eksam.Pages_Medications.EditModel
+
+@{
+    ViewData["Title"] = "Edit Medication";
+}
+
+<div class="container">
+    <h1 class="mb-4">Edit Medication</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <input type="hidden" asp-for="Medication.Id" />
+                
+                <div class="mb-3">
+                    <label asp-for="Medication.PetId" class="form-label">Pet</label>
+                    <select asp-for="Medication.PetId" class="form-select" asp-items="Model.PetSelectList">
+                        <option value="">-- Select Pet --</option>
+                    </select>
+                    <span asp-validation-for="Medication.PetId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Medication.Name" class="form-label">Medication Name</label>
+                    <input asp-for="Medication.Name" class="form-control" />
+                    <span asp-validation-for="Medication.Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Medication.Time" class="form-label">Time</label>
+                    <input asp-for="Medication.Time" type="time" class="form-control" />
+                    <span asp-validation-for="Medication.Time" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Medication.SpecialCondition" class="form-label">Special Conditions</label>
+                    <textarea asp-for="Medication.SpecialCondition" class="form-control" rows="3" placeholder="e.g., Before thunderstorms, with food"></textarea>
+                    <span asp-validation-for="Medication.SpecialCondition" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input asp-for="Medication.Required" class="form-check-input" />
+                    <label asp-for="Medication.Required" class="form-check-label">Required (Critical)</label>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
